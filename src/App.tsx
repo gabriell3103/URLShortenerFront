@@ -36,7 +36,7 @@ const App: React.FC = () => {
       showToast(
         'warn',
         'Atenção',
-        'Por favor, insira uma URL antes de tentar encurtar.'
+        'Please enter a URL before trying to shorten it.'
       );
       return;
     }
@@ -61,16 +61,16 @@ const App: React.FC = () => {
       setIsModalOpen(true);
       showToast(
         'success',
-        'URL Encurtada!',
-        'Sua URL foi encurtada com sucesso.'
+        'Shortened URL!',
+        'Your URL has been successfully shortened.'
       );
     } catch (error) {
-      console.error('Erro ao encurtar a URL:', error);
+      console.error('Error shortening URL:', error);
       setShortenedUrl(null);
       showToast(
         'error',
         'Erro',
-        'Ocorreu um erro ao tentar encurtar a URL. Por favor, tente novamente.'
+        'An error occurred when trying to shorten the URL. Please try again.'
       );
     }
   };
@@ -86,19 +86,11 @@ const App: React.FC = () => {
       try {
         await navigator.clipboard.writeText(shortenedUrl);
         setCopySuccess(true);
-        showToast(
-          'success',
-          'Sucesso',
-          'URL copiada para a área de transferência!'
-        );
+        showToast('success', 'Sucess', 'URL copied to clipboard!');
         setTimeout(() => setCopySuccess(false), 2000);
       } catch (error) {
-        console.error('Erro ao copiar para a área de transferência:', error);
-        showToast(
-          'error',
-          'Erro',
-          'Não foi possível copiar a URL para a área de transferência.'
-        );
+        console.error('Error copying to clipboard:', error);
+        showToast('error', 'Erro', 'Unable to copy URL to clipboard.');
       }
     }
   };
@@ -137,7 +129,7 @@ const App: React.FC = () => {
 
       <footer className="bg-black text-white p-4 w-full">
         <div className="flex justify-center items-center max-w-3xl mx-auto text-center">
-          <p>&copy; 2024 Conheço uma Ponte. Todos os direitos reservados.</p>
+          <p>&copy; 2024 Conheço uma Ponte. All rights reserved.</p>
         </div>
       </footer>
 

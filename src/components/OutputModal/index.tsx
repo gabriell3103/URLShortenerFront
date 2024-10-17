@@ -57,11 +57,11 @@ const OutputModal: React.FC<OutputModalProps> = ({
         </div>
         {copySuccess && (
           <p className="mt-2 text-sm text-green-600">
-            URL copiada para a área de transferência!
+            URL copied to clipboard!
           </p>
         )}
         <p className="mt-4 text-sm text-gray-600">
-          Clique no link acima para acessar ou no ícone para copiar.
+          Click on the link above to access or on the icon to copy.
         </p>
       </div>
     </div>
