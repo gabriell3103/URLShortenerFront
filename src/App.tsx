@@ -35,7 +35,7 @@ const App: React.FC = () => {
     if (!url) {
       showToast(
         'warn',
-        'Atenção',
+        'Warning',
         'Please enter a URL before trying to shorten it.'
       );
       return;
