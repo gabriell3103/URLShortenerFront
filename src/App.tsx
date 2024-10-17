@@ -81,10 +81,10 @@ const App: React.FC = () => {
         <ToastNotification ref={toastRef} message={toastMessage || undefined} />
       </div>
 
-      <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto">
-        <div>
-          <h1 className="text-5xl font-bold mb-4">URL Shortener</h1>
-          <h3 className="text-2xl font-bold mb-6 opacity-40">
+      <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">URL Shortener</h1>
+          <h3 className="text-xl sm:text-2xl font-bold mb-6 opacity-40">
             Enter your long URL below and get a shortened link in seconds.
           </h3>
           <div className="flex flex-col items-center">
@@ -107,15 +107,15 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <footer className="fixed bottom-0 left-0 w-full bg-black text-white p-4">
-        <div className="flex justify-center items-center max-w-3xl mx-auto">
+      <footer className="bg-black text-white p-4 w-full">
+        <div className="flex justify-center items-center max-w-3xl mx-auto text-center">
           <p>&copy; 2024 Conheço uma Ponte. Todos os direitos reservados.</p>
         </div>
       </footer>
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md relative transition-all transform scale-100 duration-300 animate-open">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4 sm:px-0">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-11/12 max-w-md relative transition-all transform scale-100 duration-300 animate-open">
             <button
               className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
               onClick={closeModal}
@@ -123,13 +123,13 @@ const App: React.FC = () => {
               <IoMdClose size={24} />
             </button>
             <h4 className="text-xl font-bold mb-2">Shortened URL:</h4>
-            <div className="flex gap-5">
-              <div className="w-fit border border-gray-400 p-2 rounded-md bg-slate-50">
+            <div className="flex gap-5 items-center">
+              <div className="w-fit border border-gray-400 p-2 rounded-md bg-slate-50 overflow-x-auto">
                 <a
                   href={shortenedUrl || ''}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className="text-blue-400 hover:underline break-all"
                 >
                   {shortenedUrl}
                 </a>

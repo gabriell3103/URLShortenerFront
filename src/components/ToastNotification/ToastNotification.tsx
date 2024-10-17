@@ -19,11 +19,12 @@ const ToastNotification = forwardRef<Toast | null, ToastNotificationProps>(({ me
         severity: message.severity,
         summary: message.summary,
         detail: message.detail,
+        life: 3000, 
       });
     }
   }, [message, ref]);
 
-  return <Toast ref={ref} />;
+  return <Toast ref={ref} className="responsive-toast" />;
 });
 
 export default ToastNotification;
