@@ -1,17 +1,32 @@
 import './App.css';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { HiOutlineClipboardDocument } from 'react-icons/hi2';
 import { IoMdClose } from 'react-icons/io';
 import { FaCheck } from 'react-icons/fa';
+import { ToastNotification } from './components/ToastNotification';
+import { Toast } from 'primereact/toast';
 
 const App: React.FC = () => {
   const [url, setUrl] = useState<string>('');
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<{severity: 'success' | 'info' | 'warn' | 'error', summary: string, detail: string} | null>(null);
+
+  const toastRef = useRef<Toast | null>(null);
+
+  const showToast = (severityValue: 'success' | 'info' | 'warn' | 'error', summaryValue: string, detailValue: string) => {
+    setToastMessage({ severity: severityValue, summary: summaryValue, detail: detailValue });
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!url) {
+      showToast('warn', 'Atenção', 'Por favor, insira uma URL antes de tentar encurtar.');
+      return;
+    }
+
     const api_url = 'http://localhost:3333/shorten';
 
     try {
@@ -25,12 +40,18 @@ const App: React.FC = () => {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.statusText}`);
+      }
+
       const data = await response.json();
       setShortenedUrl(data.shortened_url);
       setIsModalOpen(true);
+      showToast('success', 'URL Encurtada!', 'Sua URL foi encurtada com sucesso.');
     } catch (error) {
       console.error('Erro ao encurtar a URL:', error);
       setShortenedUrl(null);
+      showToast('error', 'Erro', 'Ocorreu um erro ao tentar encurtar a URL. Por favor, tente novamente.');
     }
   };
 
@@ -45,15 +66,21 @@ const App: React.FC = () => {
       try {
         await navigator.clipboard.writeText(shortenedUrl);
         setCopySuccess(true);
+        showToast('success', 'Sucesso', 'URL copiada para a área de transferência!');
         setTimeout(() => setCopySuccess(false), 2000);
       } catch (error) {
         console.error('Erro ao copiar para a área de transferência:', error);
+        showToast('error', 'Erro', 'Não foi possível copiar a URL para a área de transferência.');
       }
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="toast-container">
+        <ToastNotification ref={toastRef} message={toastMessage || undefined} />
+      </div>
+
       <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto">
         <div>
           <h1 className="text-5xl font-bold mb-4">URL Shortener</h1>
@@ -114,17 +141,11 @@ const App: React.FC = () => {
                 onClick={copyToClipboard}
                 title="Copy to clipboard"
               >
-                {copySuccess ? (
-                  <FaCheck size={18} />
-                ) : (
-                  <HiOutlineClipboardDocument size={18} />
-                )}
+                {copySuccess ? <FaCheck size={18} /> : <HiOutlineClipboardDocument size={18} />}
               </button>
             </div>
             {copySuccess && (
-              <p className="mt-2 text-sm text-green-600">
-                URL copiada para a área de transferência!
-              </p>
+              <p className="mt-2 text-sm text-green-600">URL copiada para a área de transferência!</p>
             )}
             <p className="mt-4 text-sm text-gray-600">
               Clique no link acima para acessar ou no ícone para copiar.
