@@ -96,29 +96,31 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-base-100">
       <div className="toast-container">
         <ToastNotification ref={toastRef} message={toastMessage || undefined} />
       </div>
 
       <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="w-full">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">URL Shortener</h1>
-          <h3 className="text-xl sm:text-2xl font-bold mb-6 opacity-40">
+          <h1 className="text-4xl sm:text-4xl font-medium mb-4">
+            URL Shortener
+          </h1>
+          <h3 className="text-xl sm:text-2xl font-light mb-6 opacity-60">
             Enter your long URL below and get a shortened link in seconds.
           </h3>
           <div className="flex flex-col items-center">
             <form className="w-full max-w-md mb-4" onSubmit={handleSubmit}>
               <input
                 type="text"
-                className="border border-gray-300 rounded p-2 text-lg w-full"
+                className="border border-primary focus:border-secondary rounded p-2 text-lg w-full"
                 placeholder="Enter your URL"
                 value={url}
                 onChange={e => setUrl(e.target.value)}
               />
               <button
                 type="submit"
-                className="w-full py-2 bg-black text-white text-lg rounded-md hover:bg-gray-800 max-w-md mt-4"
+                className="w-full py-2 bg-primary text-white text-lg rounded-md hover:bg-neutral max-w-md mt-4"
               >
                 Shorten URL
               </button>
@@ -127,7 +129,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <footer className="bg-black text-white p-4 w-full">
+      <footer className="bg-base-100 border-t border-secondary p-1 w-full">
         <div className="flex justify-center items-center max-w-3xl mx-auto text-center">
           <p>&copy; 2024 Conheço uma Ponte. All rights reserved.</p>
         </div>
