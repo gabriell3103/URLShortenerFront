@@ -35,7 +35,7 @@ const App: React.FC = () => {
     if (!url) {
       showToast(
         'warn',
-        'Atenção',
+        'Warning',
         'Please enter a URL before trying to shorten it.'
       );
       return;
@@ -69,7 +69,7 @@ const App: React.FC = () => {
       setShortenedUrl(null);
       showToast(
         'error',
-        'Erro',
+        'Error',
         'An error occurred when trying to shorten the URL. Please try again.'
       );
     }
@@ -90,7 +90,7 @@ const App: React.FC = () => {
         setTimeout(() => setCopySuccess(false), 2000);
       } catch (error) {
         console.error('Error copying to clipboard:', error);
-        showToast('error', 'Erro', 'Unable to copy URL to clipboard.');
+        showToast('error', 'Error', 'Unable to copy URL to clipboard.');
       }
     }
   };
