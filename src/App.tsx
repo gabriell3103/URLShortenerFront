@@ -129,9 +129,13 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <footer className="bg-base-100 border-t border-secondary p-1 w-full">
-        <div className="flex justify-center items-center max-w-3xl mx-auto text-center">
-          <p>&copy; 2024 Conheço uma Ponte. All rights reserved.</p>
+      <footer className="bg-base-100 p-1 w-full">
+        <div className="flex justify-center items-center w-full">
+          <div className="inline-flex border-t border-secondary p-1">
+            <p className="text-center">
+              &copy; 2024 Conheço uma Ponte. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
 
