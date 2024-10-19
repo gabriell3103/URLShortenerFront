@@ -5,6 +5,7 @@ import OutputModal from './components/OutputModal';
 import useQuery from './hooks/useQuery'; 
 import { useToast } from './hooks/useToast'; 
 import { Toast } from 'primereact/toast';
+import  { shortenUrl }  from './services/shortUrl';
 
 const App: React.FC = () => {
   const [url, setUrl] = useState<string>('');
@@ -19,36 +20,9 @@ const App: React.FC = () => {
   const query = useQuery();
   const error = query.get('error');
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (!url) {
-      showToast('warn', 'Warning', 'Please enter a URL before trying to shorten it.');
-      return;
-    }
-
-    const api_url = 'http://localhost:3333/shorten';
-
-    try {
-      const response = await fetch(api_url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ original_url: url }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setShortenedUrl(data.shortened_url);
-      setIsModalOpen(true);
-      showToast('success', 'Shortened URL!', 'Your URL has been successfully shortened.');
-    } catch (error) {
-      console.error('Error shortening URL:', error);
-      setShortenedUrl(null);
-      showToast('error', 'Error', 'An error occurred when trying to shorten the URL. Please try again.');
-    }
+    shortenUrl(url, setShortenedUrl, setIsModalOpen, showToast);
   };
 
   const closeModal = () => {
@@ -77,8 +51,6 @@ const App: React.FC = () => {
       query.delete('error');
     }
   }, [error, toastMessage, showToast, query]);
-  
-  
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
