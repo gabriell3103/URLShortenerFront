@@ -1,8 +1,9 @@
 import './App.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ToastNotification } from './components/ToastNotification';
 import { Toast } from 'primereact/toast';
 import OutputModal from './components/OutputModal';
+import useQuery from './hooks/useQuery'; // Hook personalizado para capturar query parameters
 
 const App: React.FC = () => {
   const [url, setUrl] = useState<string>('');
@@ -16,6 +17,9 @@ const App: React.FC = () => {
   } | null>(null);
 
   const toastRef = useRef<Toast | null>(null);
+
+  const query = useQuery();
+  const error = query.get('error');
 
   const showToast = (
     severityValue: 'success' | 'info' | 'warn' | 'error',
@@ -53,7 +57,7 @@ const App: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Erro: ${response.statusText}`);
+        throw new Error(`Error: ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -86,7 +90,7 @@ const App: React.FC = () => {
       try {
         await navigator.clipboard.writeText(shortenedUrl);
         setCopySuccess(true);
-        showToast('success', 'Sucess', 'URL copied to clipboard!');
+        showToast('success', 'Success', 'URL copied to clipboard!');
         setTimeout(() => setCopySuccess(false), 2000);
       } catch (error) {
         console.error('Error copying to clipboard:', error);
@@ -95,10 +99,19 @@ const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (error === 'URLNotFound') {
+      showToast('error', 'Error', 'The shortened URL was not found.');
+    }
+  }, [error]);
+
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
       <div className="toast-container">
-        <ToastNotification ref={toastRef} message={toastMessage || undefined} />
+        <ToastNotification
+          ref={toastRef}
+          message={toastMessage || undefined}
+        />
       </div>
 
       <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -116,7 +129,7 @@ const App: React.FC = () => {
                 className="border border-primary focus:border-secondary rounded p-2 text-lg w-full"
                 placeholder="Enter your URL"
                 value={url}
-                onChange={e => setUrl(e.target.value)}
+                onChange={(e) => setUrl(e.target.value)}
               />
               <button
                 type="submit"
