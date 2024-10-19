@@ -9,6 +9,7 @@ interface OutputModalProps {
   onClose: () => void;
   onCopy: () => void;
   copySuccess: boolean;
+  title?: string;
 }
 
 const OutputModal: React.FC<OutputModalProps> = ({
@@ -17,19 +18,17 @@ const OutputModal: React.FC<OutputModalProps> = ({
   onClose,
   onCopy,
   copySuccess,
+  title = "Shortened URL:", 
 }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4 sm:px-0">
-      <div className="bg-base-100 p-6 rounded-lg shadow-lg w-full sm:w-11/12 max-w-md relative transition-all transform scale-100 duration-300 animate-open">
-        <button
-          className="absolute top-2 right-2 text-gray-600 hover:text-base-content"
-          onClick={onClose}
-        >
+      <div className="bg-base-100 p-6 rounded-lg shadow-lg w-full sm:w-11/12 max-w-md relative">
+        <button className="absolute top-2 right-2 text-gray-600 hover:text-base-content" onClick={onClose}>
           <IoMdClose size={24} />
         </button>
-        <h4 className="text-xl font-bold mb-2">Shortened URL:</h4>
+        <h4 className="text-xl font-bold mb-2">{title}</h4>
         <div className="flex gap-5 items-center">
           <div className="w-fit border border-primary p-2 rounded-md bg-base-200 overflow-x-auto">
             <a
@@ -48,11 +47,7 @@ const OutputModal: React.FC<OutputModalProps> = ({
             onClick={onCopy}
             title="Copy to clipboard"
           >
-            {copySuccess ? (
-              <FaCheck size={18} />
-            ) : (
-              <HiOutlineClipboardDocument size={18} />
-            )}
+            {copySuccess ? <FaCheck size={18} /> : <HiOutlineClipboardDocument size={18} />}
           </button>
         </div>
         <p className="mt-4 text-sm text-neutral-content">

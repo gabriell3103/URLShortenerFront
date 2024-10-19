@@ -1,47 +1,29 @@
 import './App.css';
-import { useEffect, useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ToastNotification } from './components/ToastNotification';
-import { Toast } from 'primereact/toast';
 import OutputModal from './components/OutputModal';
-import useQuery from './hooks/useQuery'; // Hook personalizado para capturar query parameters
+import useQuery from './hooks/useQuery'; 
+import { useToast } from './hooks/useToast'; 
+import { Toast } from 'primereact/toast';
 
 const App: React.FC = () => {
   const [url, setUrl] = useState<string>('');
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<{
-    severity: 'success' | 'info' | 'warn' | 'error';
-    summary: string;
-    detail: string;
-  } | null>(null);
+
+  const { toastMessage, showToast } = useToast();  
 
   const toastRef = useRef<Toast | null>(null);
 
   const query = useQuery();
   const error = query.get('error');
 
-  const showToast = (
-    severityValue: 'success' | 'info' | 'warn' | 'error',
-    summaryValue: string,
-    detailValue: string
-  ) => {
-    setToastMessage({
-      severity: severityValue,
-      summary: summaryValue,
-      detail: detailValue,
-    });
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!url) {
-      showToast(
-        'warn',
-        'Warning',
-        'Please enter a URL before trying to shorten it.'
-      );
+      showToast('warn', 'Warning', 'Please enter a URL before trying to shorten it.');
       return;
     }
 
@@ -50,9 +32,7 @@ const App: React.FC = () => {
     try {
       const response = await fetch(api_url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ original_url: url }),
       });
 
@@ -63,19 +43,11 @@ const App: React.FC = () => {
       const data = await response.json();
       setShortenedUrl(data.shortened_url);
       setIsModalOpen(true);
-      showToast(
-        'success',
-        'Shortened URL!',
-        'Your URL has been successfully shortened.'
-      );
+      showToast('success', 'Shortened URL!', 'Your URL has been successfully shortened.');
     } catch (error) {
       console.error('Error shortening URL:', error);
       setShortenedUrl(null);
-      showToast(
-        'error',
-        'Error',
-        'An error occurred when trying to shorten the URL. Please try again.'
-      );
+      showToast('error', 'Error', 'An error occurred when trying to shorten the URL. Please try again.');
     }
   };
 
@@ -100,10 +72,13 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (error === 'URLNotFound') {
+    if (error === 'URLNotFound' && !toastMessage) {
       showToast('error', 'Error', 'The shortened URL was not found.');
+      query.delete('error');
     }
-  }, [error]);
+  }, [error, toastMessage, showToast, query]);
+  
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
@@ -115,39 +90,33 @@ const App: React.FC = () => {
       </div>
 
       <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="w-full">
-          <h1 className="text-4xl sm:text-4xl font-medium mb-4">
-            URL Shortener
-          </h1>
+        <div className="flex flex-col justify-center items-center content-center w-full">
+          <h1 className="text-4xl sm:text-4xl font-medium mb-4">URL Shortener</h1>
           <h3 className="text-xl sm:text-2xl font-light mb-6 opacity-60">
             Enter your long URL below and get a shortened link in seconds.
           </h3>
-          <div className="flex flex-col items-center">
-            <form className="w-full max-w-md mb-4" onSubmit={handleSubmit}>
-              <input
-                type="text"
-                className="border border-primary focus:border-secondary rounded p-2 text-lg w-full"
-                placeholder="Enter your URL"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="w-full py-2 bg-primary text-white text-lg rounded-md hover:bg-neutral max-w-md mt-4"
-              >
-                Shorten URL
-              </button>
-            </form>
-          </div>
+          <form className="w-full max-w-md mb-4 " onSubmit={handleSubmit}>
+            <input
+              type="text"
+              className="border border-primary focus:border-secondary rounded p-2 text-lg w-full"
+              placeholder="Enter your URL"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="w-full py-2 bg-primary text-white text-lg rounded-md hover:bg-neutral max-w-md mt-4"
+            >
+              Shorten URL
+            </button>
+          </form>
         </div>
       </div>
 
       <footer className="bg-base-100 p-1 w-full">
         <div className="flex justify-center items-center w-full">
           <div className="inline-flex border-t border-secondary px-10 py-1">
-            <p className="text-center">
-              &copy; 2024 Conheço uma Ponte. All rights reserved.
-            </p>
+            <p className="text-center">&copy; 2024 Conheço uma Ponte. All rights reserved.</p>
           </div>
         </div>
       </footer>
