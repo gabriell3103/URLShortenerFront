@@ -131,7 +131,7 @@ const App: React.FC = () => {
 
       <footer className="bg-base-100 p-1 w-full">
         <div className="flex justify-center items-center w-full">
-          <div className="inline-flex border-t border-secondary p-1">
+          <div className="inline-flex border-t border-secondary px-10 py-1">
             <p className="text-center">
               &copy; 2024 Conheço uma Ponte. All rights reserved.
             </p>
