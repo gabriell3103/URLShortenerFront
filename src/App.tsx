@@ -2,18 +2,20 @@ import './App.css';
 import { useState, useRef, useEffect } from 'react';
 import { ToastNotification } from './components/ToastNotification';
 import OutputModal from './components/OutputModal';
-import useQuery from './hooks/useQuery'; 
-import { useToast } from './hooks/useToast'; 
+import useQuery from './hooks/useQuery';
+import { useToast } from './hooks/useToast';
 import { Toast } from 'primereact/toast';
-import  { shortenUrl }  from './services/shortUrl';
+import { shortenUrl } from './services/shortUrl';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 const App: React.FC = () => {
   const [url, setUrl] = useState<string>('');
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
-  const { toastMessage, showToast } = useToast();  
+  const { toastMessage, showToast } = useToast();
 
   const toastRef = useRef<Toast | null>(null);
 
@@ -23,6 +25,11 @@ const App: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     shortenUrl(url, setShortenedUrl, setIsModalOpen, showToast);
+
+    setLoading(true);
+    if (!shortenedUrl) {
+      setLoading(false);
+    }
   };
 
   const closeModal = () => {
@@ -53,17 +60,16 @@ const App: React.FC = () => {
   }, [error, toastMessage, showToast, query]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-100">
+    <div className="flex flex-col min-h-screen bg-base-100 relative">
       <div className="toast-container">
-        <ToastNotification
-          ref={toastRef}
-          message={toastMessage || undefined}
-        />
+        <ToastNotification ref={toastRef} message={toastMessage || undefined} />
       </div>
 
       <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-center items-center content-center w-full">
-          <h1 className="text-4xl sm:text-4xl font-medium mb-4">URL Shortener</h1>
+          <h1 className="text-4xl sm:text-4xl font-medium mb-4">
+            URL Shortener
+          </h1>
           <h3 className="text-xl sm:text-2xl font-light mb-6 opacity-60">
             Enter your long URL below and get a shortened link in seconds.
           </h3>
@@ -73,11 +79,12 @@ const App: React.FC = () => {
               className="border border-primary focus:border-secondary rounded p-2 text-lg w-full"
               placeholder="Enter your URL"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={e => setUrl(e.target.value)}
             />
             <button
               type="submit"
               className="w-full py-2 bg-primary text-white text-lg rounded-md hover:bg-neutral max-w-md mt-4"
+              disabled={loading}
             >
               Shorten URL
             </button>
@@ -88,10 +95,21 @@ const App: React.FC = () => {
       <footer className="bg-base-100 p-1 w-full">
         <div className="flex justify-center items-center w-full">
           <div className="inline-flex border-t border-secondary px-10 py-1">
-            <p className="text-center">&copy; 2024 Conheço uma Ponte. All rights reserved.</p>
+            <p className="text-center">
+              &copy; 2024 Conheço uma Ponte. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
+
+      {loading && (
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+          <ProgressSpinner
+            style={{ width: '50px', height: '50px' }}
+            className="p-3 spinner-primary"
+          />
+        </div>
+      )}
 
       <OutputModal
         shortenedUrl={shortenedUrl}
