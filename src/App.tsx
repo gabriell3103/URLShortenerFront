@@ -16,18 +16,40 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { toastMessage, showToast } = useToast();
-
   const toastRef = useRef<Toast | null>(null);
 
   const query = useQuery();
   const error = query.get('error');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const validateUrl = (inputUrl: string): string | null => {
+    try {
+      const validatedUrl = new URL(inputUrl);
+      return validatedUrl.href;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    shortenUrl(url, setShortenedUrl, setIsModalOpen, showToast);
+    const validUrl = validateUrl(url);
+
+    if (!validUrl) {
+      showToast('error', 'Invalid URL', 'Please provide a valid URL.');
+      return;
+    }
 
     setLoading(true);
-    if (!shortenedUrl) {
+
+    try {
+      const data = await shortenUrl(validUrl);
+      setShortenedUrl(data);
+      
+      setIsModalOpen(true);
+      showToast('success', 'Shortened URL!', 'Your URL has been successfully shortened.');
+    } catch {
+      showToast('error', 'Error', 'An error occurred while shortening the URL. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
@@ -39,16 +61,15 @@ const App: React.FC = () => {
   };
 
   const copyToClipboard = async () => {
-    if (shortenedUrl) {
-      try {
-        await navigator.clipboard.writeText(shortenedUrl);
-        setCopySuccess(true);
-        showToast('success', 'Success', 'URL copied to clipboard!');
-        setTimeout(() => setCopySuccess(false), 2000);
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-        showToast('error', 'Error', 'Unable to copy URL to clipboard.');
-      }
+    if (!shortenedUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(shortenedUrl);
+      setCopySuccess(true);
+      showToast('success', 'Copied!', 'URL copied to clipboard.');
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch {
+      showToast('error', 'Error', 'Failed to copy URL to clipboard.');
     }
   };
 
@@ -67,13 +88,12 @@ const App: React.FC = () => {
 
       <div className="flex-grow flex items-center justify-center text-center w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-center items-center content-center w-full">
-          <h1 className="text-4xl sm:text-4xl font-medium mb-4">
-            URL Shortener
-          </h1>
+          <h1 className="text-4xl sm:text-4xl font-medium mb-4">URL Shortener</h1>
           <h3 className="text-xl sm:text-2xl font-light mb-6 opacity-60">
             Enter your long URL below and get a shortened link in seconds.
           </h3>
-          <form className="w-full max-w-md mb-4 " onSubmit={handleSubmit}>
+
+          <form className="w-full max-w-md mb-4" onSubmit={handleSubmit}>
             <input
               type="text"
               className="border border-primary focus:border-secondary rounded p-2 text-lg w-full"
@@ -95,19 +115,14 @@ const App: React.FC = () => {
       <footer className="bg-base-100 p-1 w-full">
         <div className="flex justify-center items-center w-full">
           <div className="inline-flex border-t border-secondary px-10 py-1">
-            <p className="text-center">
-              &copy; 2024 Conheço uma Ponte. All rights reserved.
-            </p>
+            <p className="text-center">&copy; 2024 Conheço uma Ponte. All rights reserved.</p>
           </div>
         </div>
       </footer>
 
       {loading && (
         <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-          <ProgressSpinner
-            style={{ width: '50px', height: '50px' }}
-            className="p-3 spinner-primary"
-          />
+          <ProgressSpinner style={{ width: '50px', height: '50px' }} className="p-3 spinner-primary" />
         </div>
       )}
 

@@ -1,12 +1,8 @@
 export const shortenUrl = async (
   url: string, 
-  setShortenedUrl: (url: string | null) => void,
-  setIsModalOpen: (open: boolean) => void,
-  showToast: (type: 'success' | 'warn' | 'error', title: string, message: string) => void
-) => {
+): Promise<string> => {
   if (!url) {
-    showToast('warn', 'Warning', 'Please enter a URL before trying to shorten it.');
-    return;
+    throw new Error('Please enter a URL before trying to shorten it');
   }
 
   const api_url = 'http://localhost:3333/shorten';
@@ -23,12 +19,10 @@ export const shortenUrl = async (
     }
 
     const data = await response.json();
-    setShortenedUrl(data.shortened_url);
-    setIsModalOpen(true);
-    showToast('success', 'Shortened URL!', 'Your URL has been successfully shortened.');
+    return data.shortened_url;
   } catch (error) {
     console.error('Error shortening URL:', error);
-    setShortenedUrl(null);
-    showToast('error', 'Error', 'An error occurred when trying to shorten the URL. Please try again.');
+    throw new Error(`An error occurred when trying to shorten the URL.\n ${error}`);
+
   }
 };
