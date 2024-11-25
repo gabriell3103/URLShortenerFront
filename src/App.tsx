@@ -35,7 +35,7 @@ const App: React.FC = () => {
     const validUrl = validateUrl(url);
 
     if (!validUrl) {
-      showToast('error', 'Invalid URL', 'Please provide a valid URL.');
+      showToast('warn', 'Invalid URL', 'Please provide a valid URL.');
       return;
     }
 
